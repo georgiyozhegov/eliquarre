@@ -1,0 +1,15 @@
+{
+      "features": [
+            "words",
+            "sentences",
+            "paragraphs",    
+            "vowels",
+            "alphabetic",
+            "punctuations",
+            "markings"
+      ],
+      "samples": 50,
+      "max_iterations": 150,
+      "split_ratio": 0.7,
+      "split_token": "<[SPLIT]>"
+}
