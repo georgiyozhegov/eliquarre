@@ -19,6 +19,8 @@ pub struct Config
       #[serde(default)]
       pub max_iterations: u32,
       #[serde(default)]
+      pub split_ratio: f32,
+      #[serde(default)]
       pub split_token: String,
 }
 
@@ -38,6 +40,7 @@ impl Default for Config
                   ]),
                   samples: 30,
                   max_iterations: 90,
+                  split_ratio: 0.7,
                   split_token: String::from("<[SPLIT]>"),
             }
       }

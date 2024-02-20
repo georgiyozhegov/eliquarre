@@ -28,7 +28,7 @@ pub fn punctuations(text: String) -> N
 
 pub fn markings(text: String) -> N
 {
-      text.chars().filter(is_punctuation).collect::<Vec<_>>().len() as N
+      text.chars().filter(is_marking).collect::<Vec<_>>().len() as N
 }
 
 

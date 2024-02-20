@@ -1,8 +1,8 @@
 use crate::{
-      error,
+      config::Config,
       features::features,
-      Config,
 };
+
 use serde::{
       Deserialize,
       Serialize,
@@ -25,12 +25,12 @@ use std::io::{
 pub struct Sample
 {
       pub features: HashMap<String, u32>,
-      pub valid: bool,
+      pub valid: Option<bool>,
 }
 
 impl Sample
 {
-      pub fn new(text: String, valid: bool, config: &Config) -> Self
+      pub fn new(text: String, valid: Option<bool>, config: &Config) -> Self
       {
             Self {
                   features: features(text, config),
@@ -73,7 +73,7 @@ fn generate(file: String, config: &Config) -> Vec<Sample>
             };
             samples.push(Sample::new(
                   text.to_string(),
-                  is_valid(&text.to_string(), (step / step_size) as u32, config.samples),
+                  Some(is_valid(&text.to_string(), (step / step_size) as u32, config.samples)),
                   config,
             ));
       }
@@ -83,17 +83,10 @@ fn generate(file: String, config: &Config) -> Vec<Sample>
 
 pub fn ask(path: String, config: &Config)
 {
-      let file = {
-            let file = fs::read_to_string(&path);
-            if file.is_err() {
-                  error(format!("Failed to read {}", path).as_str())
-            }
-            file.unwrap()
-      };
-
+      let file = fs::read_to_string(&path).expect("Failed to read file");
       let samples = generate(file, config);
+      write_jsonl("samples.jsonl", samples).expect("Failed to load samples.jsonl");
 
-      if write_jsonl("samples.jsonl", samples).is_err() {
-            error("Failed to write samples");
-      }
+      println!("Saved to samples.jsonl");
+      println!("To train model type: elliquarre train samples.jsonl");
 }

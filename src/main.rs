@@ -2,26 +2,19 @@ mod ask;
 mod config;
 mod constants;
 mod features;
+mod filter;
 mod train;
 
 use ask::ask;
 use config::Config;
+use filter::filter;
 use train::train;
 
-use anyhow::Result;
-use std::{
-      env::{
-            args,
-            Args,
-      },
-      process::exit,
+use std::env::{
+      args,
+      Args,
 };
 
-
-
-// eliquarre ask <texts.txt>
-// eliquarre train <samples.jsonl>
-// eliquarre filter <texts.txt>
 
 
 #[derive(Debug)]
@@ -46,34 +39,18 @@ fn command(args: &mut Args) -> Option<Command>
 }
 
 
-fn error(message: &str)
-{
-      eprintln!("ERROR: {message}");
-      exit(1);
-}
-
-
-fn filter(path: String) {}
-
-
 fn main()
 {
-      let config = Config::new();
-      if config.is_err() {
-            error("Invalid config.");
-      }
+      let config = Config::new().expect("Failed to load config");
 
       let mut args = args();
       args.next(); // skip binary name
 
-      let command = command(&mut args);
-      if command.is_none() {
-            error("Invalid command. Available commands: ask, train, filter");
-      }
-
-      match command.unwrap() {
-            Command::Ask(path) => ask(path, &config.unwrap()),
-            Command::Train(path) => train(path, &config.unwrap()),
-            Command::Filter(path) => filter(path),
+      let command =
+            command(&mut args).expect("Failed to read command. Maybe path is not specified");
+      match command {
+            Command::Ask(path) => ask(path, &config),
+            Command::Train(path) => train(path, &config),
+            Command::Filter(path) => filter(path, &config).expect("ERROR: "),
       }
 }
